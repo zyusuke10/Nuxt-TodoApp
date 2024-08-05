@@ -1,9 +1,7 @@
 <template>
-    <div v-if="isOpen">
-        <TaskModal/>
-    </div>
-    <div v-else>
-        <TaskCard/>
+    <div>
+      <TaskModal v-if="isOpen" />
+      <TaskCard v-else />
     </div>
 </template>
 
