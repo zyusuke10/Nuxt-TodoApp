@@ -16,20 +16,23 @@ import { useTaskStore } from '~/store/TaskStore';
 import type { Task } from '../../store/Types'
 import { useCommonStore } from '../../store/CommonStore';
 import { useModalStore } from '../../store/ModalStore';
+import { useAlertStore } from '../../store/AlertStore';
 
 defineProps<{
   item: Task
 }>()
-
+const { deleteTask, getTaskById, task } = useTaskStore()
+const { clearAlert } = useAlertStore()
 
 //stores 
-const { deleteTask, getTaskById, task } = useTaskStore()
+
 const { openModal }= useModalStore()
 const commonStore = useCommonStore()
 
 
 //methods
 const handleUpdate = (id: string) => {
+  clearAlert()
   commonStore.isEdit = true
   commonStore.taskEditId = id
   const currentTask = getTaskById(id)
@@ -41,6 +44,7 @@ const handleUpdate = (id: string) => {
 }
 
 const handleDelete = (id:string) => {
+  clearAlert()
   deleteTask(id)
 }
 </script>

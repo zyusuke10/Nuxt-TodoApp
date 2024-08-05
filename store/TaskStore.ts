@@ -1,6 +1,8 @@
-import { defineStore } from "pinia";
-import { v4 as uuidv4 } from 'uuid';
-import type { Task } from "./Types";
+import { defineStore } from "pinia"
+import { v4 as uuidv4 } from 'uuid'
+import type { Task } from "./Types"
+import { useCommonStore } from "./CommonStore"
+import { useAlertStore } from "./AlertStore"
 
 export const useTaskStore = defineStore("TaskStore", () => {
     
@@ -28,39 +30,79 @@ export const useTaskStore = defineStore("TaskStore", () => {
         };
     }
 
-    function addTask(newTask: Task): void {
-        if (newTask.title.trim() === '') {
-            console.log('Plese provide a title')
-            return
+    function addTask(newTask: Task): string {
+        const { setIsLoading, clearIsLoading } = useCommonStore()
+        const { setAlert } = useAlertStore()
+        try {
+            setIsLoading()
+            if (newTask.title.trim() === '') {
+                throw new Error('Must provide a title')
+            }
+            taskList.value.push({
+                ...newTask
+            });
+            setAlert('success', 'Successfully added a task')
+        } catch (error) {
+            if (error instanceof Error && error.message) {
+                setAlert('error', error.message)
+                return '400'
+            } else {
+                setAlert('error', 'Failed to add a task')
+                return '500'
+            }
+        } finally {
+            clearTask();
+            clearIsLoading()
         }
-
-        taskList.value.push({
-            ...newTask
-        });
-
-        clearTask();
+        return '200'
     }
 
  
     function deleteTask(taskId: string | null): void {
-        if (!taskId) {
-            console.log('id is null')
-            return
+        const { setAlert } = useAlertStore()
+        const { setIsLoading, clearIsLoading } = useCommonStore()
+
+        try {
+            setIsLoading()
+            if (!taskId) {
+                console.log('id is null')
+                return
+            }
+            taskList.value = taskList.value.filter((task) => task.id !== taskId);
+            setAlert('success', 'Successfully deleted a task')
+        } catch (error) {
+            setAlert('error', 'Failed to delete a task')
+        } finally {
+            clearIsLoading()
         }
-        taskList.value = taskList.value.filter((task) => task.id !== taskId);
     }
 
 
-    function updateTask(taskId: string | null, title: string, notes: string): void {
+    function updateTask(taskId: string | null, title: string, notes: string): string {
+        const { setAlert } = useAlertStore()
+        const { setIsLoading, clearIsLoading } = useCommonStore()
+
         if (!taskId) {
             console.log('id is null')
-            return
+            return '404'
         }
-        const currentTask = getTaskById(taskId);
-        if (!currentTask) return;
 
-        currentTask.title = title;
-        currentTask.notes = notes;
+        try {
+            setIsLoading()
+            const currentTask = getTaskById(taskId)
+            if (!currentTask) return '404'
+            currentTask.title = title
+            if (currentTask.title.trim() ==='') throw new Error('Must provide a title')
+            currentTask.notes = notes
+            setAlert('success', 'Successfully updated the task')
+        } catch (error) {
+            if (error instanceof Error) setAlert('error', error.message)
+                return '400'
+        } finally {
+            clearIsLoading()
+        }
+
+        return '200'
     }   
 
     return { task, taskList, addTask, deleteTask, updateTask, getTaskById, clearTask };

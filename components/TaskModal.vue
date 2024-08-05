@@ -1,7 +1,8 @@
 <template>
-  <div id="modal-bg" class="flex items-center justify-center w-[100vw]">
+  <div id="modal-bg" class="flex items-center justify-center  w-[90vw] md:w-[100vw]">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-      <h2 class="text-2xl font-bold mb-4">{{ isEdit ? constants.TITLE.EDIT : constants.TITLE.ADD }}</h2>
+      <h2 class="text-lg md:text-2xl font-bold mb-4">{{ isEdit ? constants.TITLE.EDIT : constants.TITLE.ADD }}</h2>
+      <Alert v-if="alertStore.showAlert" />
       <form id="task-form">
         <div class="mb-4">
           <label for="task-input" class="block text-sm font-medium text-gray-700">Task</label>
@@ -21,45 +22,53 @@
 </template>
 
 <script setup lang="ts">
-import { useCommonStore } from '~/store/CommonStore';
-import { useModalStore } from '../store/ModalStore';
-import { useTaskStore } from '../store/TaskStore';
+import { useCommonStore } from '~/store/CommonStore'
+import { useModalStore } from '../store/ModalStore'
+import { useTaskStore } from '../store/TaskStore'
+import { useAlertStore } from '../store/AlertStore'
+import type { Task } from '../store/Types';
 
 
 //Stores
 const { closeModal } = useModalStore()
 const { addTask, task, updateTask, clearTask } = useTaskStore()
-const {isEdit, resetIsEdit, taskEditId} = useCommonStore()
-const { title, notes } = toRefs(task);
+const {isEdit, clearIsEdit, taskEditId} = useCommonStore()
+const { title, notes } = toRefs(task)
+const alertStore = useAlertStore()
 
 
 //Methods
 const submitHandler = () => {
-  if (!title.value.trim()) {
-    alert('Task title is required');
-    return
-  }
   task.title = title.value;
   task.notes = notes.value;
   if (isEdit) {
     handleUpdate(taskEditId,task.title, task.notes)
   } else {
-    addTask(task);
+    handleAdd(task)
   }
-  closeModal()
 };
 
 
 const handleCancel = () => {
   closeModal()
-  resetIsEdit()
+  clearIsEdit()
 };
+
+const handleAdd = (task: Task) => {
+  const statusCode = addTask(task)
+  if ( statusCode === '200' ) {
+    closeModal()
+  }
+}
 
 const handleUpdate = (id: string | null, title: string, notes: string): void => {
   if (id) {
-    updateTask(id, title, notes);
+    const statusCode = updateTask(id, title, notes);
+    if (statusCode === '200') {
+      closeModal()
+    }
   }
-  resetIsEdit();
+  clearIsEdit();
   clearTask();
 };
 
