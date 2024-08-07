@@ -1,17 +1,24 @@
+import type { LoginParams, User } from "./Types"
 
 
 export const useAuthStore = defineStore('AuthStore', () => {
     const isUser = ref(false)
-    const username = ref<string>('')
-    const password = ref<string>('')
+    const userInfo = ref<User>({
+        id: '',
+        name: '',
+        password: '',
+        joined: new Date()
+    })
 
-    const login = () => {
+    const login = ({ username, password }: LoginParams) => {
         isUser.value = true
+        console.log(username, password)
         return navigateTo('/')
     }
 
-    const register = () => {
-
+    const register = ({ username, password }: LoginParams) => {
+        console.log(username, password)
+        return navigateTo('/login')
     }   
 
     const logout = () => {
@@ -19,5 +26,5 @@ export const useAuthStore = defineStore('AuthStore', () => {
         return navigateTo('login')
     }
 
-    return { isUser, username, password, login, logout, register }
+    return { isUser, userInfo, login, logout, register }
 })
