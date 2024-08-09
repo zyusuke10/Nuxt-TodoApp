@@ -42,7 +42,7 @@
             Register
           </button>
         </form>
-        <p class="text-right"><a href="/login" class="text-blue-600">Login here</a></p>
+        <p class="text-right"><router-link to="/login" class="text-blue-600">Login here</router-link></p>
       </div>
     </div>
   </template>

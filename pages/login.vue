@@ -32,7 +32,7 @@
             Login
           </button>
         </form>
-        <p class="text-right"><a href="/register" class="text-blue-600">Register here</a></p>
+        <p class="text-right"><router-link to="/register" class="text-blue-600">Register here</router-link></p>
       </div>
     </div>
   </template>
