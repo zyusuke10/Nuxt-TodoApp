@@ -1,7 +1,10 @@
 <template>
   <li class="flex items-center justify-between p-3 bg-gray-50 rounded">
+    <div class="flex items-center mr-4">
+      <input v-model="completed" type="checkbox" class="form-checkbox h-5 w-5 text-green-600" @change="handleComplete">
+    </div>
   <div class="flex flex-col flex-1 min-w-0">
-    <span class="font-bold">{{ item.title }}</span>
+    <span class="font-bold truncate">{{ item.title }}</span>
     <p class="text-sm truncate">{{ item.notes }}</p>
   </div>
   <div class="flex items-center gap-2">
@@ -18,10 +21,14 @@ import { useCommonStore } from '../../store/CommonStore';
 import { useModalStore } from '../../store/ModalStore';
 import { useAlertStore } from '../../store/AlertStore';
 
-defineProps<{
+const props = defineProps<{
   item: Task
 }>()
+
+const emit = defineEmits(['update-completed']);
+
 const { deleteTask, getTaskById, task } = useTaskStore()
+const completed  = ref(props.item.isCompleted)
 const { clearAlert } = useAlertStore()
 
 //stores 
@@ -47,4 +54,12 @@ const handleDelete = (id:string) => {
   clearAlert()
   deleteTask(id)
 }
+
+const handleComplete = () => {
+  emit('update-completed', props.item.id, completed.value);
+}
+
+watch(() => props.item.isCompleted, (newVal:boolean) => {
+  completed.value = newVal;
+});
 </script>
