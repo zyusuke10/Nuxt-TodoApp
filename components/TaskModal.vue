@@ -13,7 +13,7 @@
           <textarea id="notes-input" v-model="notes" class="w-full p-2 border rounded" placeholder="Notes"/>
         </div>
         <div class="flex justify-end space-x-2">
-          <button id="cancel-button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" @click="handleCancel">Cancel</button>
+          <button id="cancel-button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" @click.prevent="handleCancel">Cancel</button>
           <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" @click.prevent="submitHandler">{{ isEdit ? 'Update' : 'Add' }}</button>
         </div>
       </form>
