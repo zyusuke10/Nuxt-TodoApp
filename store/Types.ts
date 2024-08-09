@@ -1,7 +1,9 @@
 export type Task = {
     id: string,
     title: string,
-    notes: string
+    notes: string,
+    isCompleted: boolean,
+    created_at: Date
 }
 
 export type User = {

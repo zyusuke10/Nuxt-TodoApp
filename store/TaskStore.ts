@@ -7,11 +7,14 @@ import { useAlertStore } from "./AlertStore"
 export const useTaskStore = defineStore("TaskStore", () => {
     
     const taskList = ref<Task[]>([]);
+    const filteredTaskList = ref<Task[]>([])
 
     const task = ref<Task>({
         id: uuidv4(),
         title: '',
-        notes: ''
+        notes: '',
+        isCompleted: false,
+        created_at: new Date()
     });
 
     function getTaskById(taskId: string | null): Task | undefined {
@@ -26,7 +29,9 @@ export const useTaskStore = defineStore("TaskStore", () => {
         task.value = {
             id: uuidv4(),
             title: '',
-            notes: ''
+            notes: '',
+            isCompleted: false,
+            created_at: new Date()
         };
     }
 
@@ -72,6 +77,7 @@ export const useTaskStore = defineStore("TaskStore", () => {
             setAlert('success', 'Successfully deleted a task')
         } catch (error) {
             setAlert('error', 'Failed to delete a task')
+            console.log(error)
         } finally {
             clearIsLoading()
         }
@@ -105,5 +111,5 @@ export const useTaskStore = defineStore("TaskStore", () => {
         return '200'
     }   
 
-    return { task, taskList, addTask, deleteTask, updateTask, getTaskById, clearTask };
+    return { task, taskList, filteredTaskList, addTask, deleteTask, updateTask, getTaskById, clearTask };
 });
